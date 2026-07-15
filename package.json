@@ -1,0 +1,20 @@
+{
+  "name": "kv",
+  "version": "1.0.0",
+  "description": "Tiny token-authed persistent JSON/KV store API. Glue for scripts and small apps — GET/PUT/DELETE, TTL, atomic incr.",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch src/index.ts",
+    "test": "bun test"
+  },
+  "keywords": ["kv", "key-value", "json-store", "api", "bun", "hono"],
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
