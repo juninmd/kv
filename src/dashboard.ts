@@ -39,13 +39,14 @@ main{padding:20px 24px;max-width:900px;margin:0 auto;display:grid;grid-template-
 </main>
 <script>
 var tok=localStorage.getItem('kv_token')||'';document.getElementById('token').value=tok;var sel=null;
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function H(){return {'authorization':'Bearer '+document.getElementById('token').value};}
 document.getElementById('save-tok').onclick=function(){localStorage.setItem('kv_token',document.getElementById('token').value);load();};
 async function load(){
   var r=await fetch('/api/kv',{headers:H()});
   if(r.status===401){document.getElementById('keys').innerHTML='<div class="err">Token inválido.</div>';return;}
   var d=await r.json();
-  document.getElementById('keys').innerHTML=d.keys.map(function(k){return '<div class="k" data-k="'+encodeURIComponent(k.key)+'">'+k.key+' <span class="muted">('+k.bytes+'b)</span></div>';}).join('')||'<div class="muted">vazio</div>';
+  document.getElementById('keys').innerHTML=d.keys.map(function(k){return '<div class="k" data-k="'+encodeURIComponent(k.key)+'">'+esc(k.key)+' <span class="muted">('+Number(k.bytes)+'b)</span></div>';}).join('')||'<div class="muted">vazio</div>';
   document.querySelectorAll('.k').forEach(function(el){el.onclick=function(){open(decodeURIComponent(el.dataset.k));};});
 }
 async function open(key){
@@ -58,7 +59,7 @@ document.getElementById('put').onclick=async function(){
   if(!sel)return;var msg=document.getElementById('msg');
   var ttl=document.getElementById('ttl').value;
   var r=await fetch('/api/kv/'+sel.split('/').map(encodeURIComponent).join('/')+(ttl?('?ttl='+ttl):''),{method:'PUT',headers:H(),body:document.getElementById('val').value});
-  msg.innerHTML=r.ok?'<span class="muted">salvo ✓</span>':'<span class="err">'+((await r.json()).error)+'</span>';load();
+  msg.innerHTML=r.ok?'<span class="muted">salvo ✓</span>':'<span class="err">'+esc((await r.json()).error)+'</span>';load();
 };
 document.getElementById('del').onclick=async function(){if(!sel)return;await fetch('/api/kv/'+sel.split('/').map(encodeURIComponent).join('/'),{method:'DELETE',headers:H()});sel=null;document.getElementById('val').value='';document.getElementById('cur').textContent='Selecione uma chave.';load();};
 load();
